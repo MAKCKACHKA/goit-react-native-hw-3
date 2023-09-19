@@ -2,7 +2,8 @@ import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import { useFonts } from "expo-font";
-import LoginScreen from "./Screens/LoginScreen";
+import LoginScreen from "./Screens/LoginScreen copy";
+// import LoginScreen from "./Screens/LoginScreen";
 
 const image = { uri: "https://legacy.reactjs.org/logo-og.png" };
 
@@ -20,8 +21,8 @@ const App = () => {
         resizeMode="cover"
         style={styles.image}
       > */}
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
+      <RegistrationScreen />
+      {/* <LoginScreen /> */}
       {/* </ImageBackground> */}
     </View>
   );

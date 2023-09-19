@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import {
-  View,
   Text,
-  TextInput,
   TouchableOpacity,
   ImageBackground,
-  StyleSheet,
   Image,
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Button,
+  Pressable,
 } from "react-native";
 
 const RegistrationScreen = () => {
@@ -15,92 +20,94 @@ const RegistrationScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isInputFocused, setInputFocused] = useState(false);
+
+  const [loginFocused, setLoginFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleRegistration = () => {
-    if (login !== "" && email !== "" && password !== "") {
-      console.log(`login: ${login}, email: ${email}, password: ${password}`);
-    }
+    console.log(`login: ${login}, email: ${email}, password: ${password}`);
     setLogin("");
     setEmail("");
     setPassword("");
   };
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setInputFocused(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setInputFocused(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
   return (
     <ImageBackground
       source={require("../assets/background.png")}
       style={styles.backgroundImage}
+      resizeMode="stretch"
     >
-      <View
-        style={[styles.container, { paddingTop: isInputFocused ? 100 : 265 }]}
-      >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.wrapper}>
-          <Image
-            style={styles.miniImage}
-            source={require("../assets/favicon.png")}
-          />
-
-          <Text style={styles.title}>Реєстрація</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Логін"
-            onChangeText={(text) => setLogin(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Адреса електронної пошти"
-            onChangeText={(text) => setEmail(text)}
-          />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Пароль"
-              secureTextEntry={!showPassword}
-              onChangeText={(text) => setPassword(text)}
+          <View style={styles.container}>
+            <Image
+              style={styles.miniImage}
+              source={require("../assets/favicon.png")}
             />
-            <TouchableOpacity
-              style={styles.showPasswordButton}
-              onPress={togglePasswordVisibility}
+            <Text style={styles.title}>Реєстрація</Text>
+            <KeyboardAvoidingView
+              behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
-              <Text style={styles.showPasswordText}>
-                {showPassword ? "Приховати" : "Показати"}
-              </Text>
-            </TouchableOpacity>
+              <TextInput
+                value={login}
+                style={[styles.input, loginFocused && styles.focusedInput]}
+                placeholder="Логін"
+                onChangeText={setLogin}
+                onFocus={() => setLoginFocused(true)}
+                onBlur={() => setLoginFocused(false)}
+              />
+              <TextInput
+                value={email}
+                style={[
+                  styles.input,
+                  emailFocused === true && styles.focusedInput,
+                ]}
+                placeholder="Адреса електронної пошти"
+                onChangeText={setEmail}
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
+              />
+              <View
+                style={[
+                  styles.passwordContainer,
+                  passwordFocused === true && styles.focusedInput,
+                ]}
+              >
+                <TextInput
+                  value={password}
+                  style={styles.passwordInput}
+                  placeholder="Пароль"
+                  secureTextEntry={!showPassword}
+                  onChangeText={setPassword}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
+                />
+                <Pressable
+                  style={styles.showPasswordButton}
+                  onPress={togglePasswordVisibility}
+                >
+                  <Text style={styles.showPasswordText}>
+                    {showPassword ? "Приховати" : "Показати"}
+                  </Text>
+                </Pressable>
+              </View>
+            </KeyboardAvoidingView>
+
+            <Pressable
+              style={styles.registerButton}
+              onPress={handleRegistration}
+            >
+              <Text style={styles.registerButtonText}>Зареєструватися</Text>
+            </Pressable>
+            <Text style={styles.loginLink}>Вже є акаунт? Увійти</Text>
           </View>
-          <TouchableOpacity
-            style={styles.registerButton}
-            onPress={handleRegistration}
-          >
-            <Text style={styles.registerButtonText}>Зареєструватися</Text>
-          </TouchableOpacity>
-          <Text style={styles.loginLink}>Вже є акаунт? Увійти</Text>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </ImageBackground>
   );
 };
@@ -113,46 +120,38 @@ const styles = StyleSheet.create({
   },
 
   miniImage: {
+    alignSelf: "center",
     width: 120,
-    borderRadius: 20,
     height: 120,
     flexShrink: 0,
+    borderRadius: 20,
     position: "absolute",
     top: -63,
     backgroundColor: "black",
   },
 
-  container: {
-    marginLeft: "auto",
-    marginRight: "auto",
-
-    // paddingTop: 265,
+  wrapper: {
     flex: 1,
     alignItems: "center",
     width: "100%",
 
-    // height: 812,
-
-    borderRadius: 10,
+    justifyContent: "flex-end",
     flexShrink: 0,
   },
-  wrapper: {
-    backgroundColor: "white",
-    flex: 1,
+  container: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
     alignItems: "center",
     position: "relative",
-
     width: "100%",
-
     height: 549,
+
     flexShrink: 0,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
   },
   title: {
-    fontFamily: "Roboto-Medium",
+    // fontFamily: "Roboto-Medium",
     marginTop: 92,
     fontWeight: "bold",
 
@@ -160,36 +159,33 @@ const styles = StyleSheet.create({
 
     color: "#212121",
     textAlign: "center",
-    fontSize: 30,
     fontStyle: "normal",
+    fontSize: 30,
   },
   input: {
+    flexShrink: 0,
     width: 343,
     height: 50,
-    flexShrink: 0,
-    borderRadius: 3,
-    marginBottom: 16,
-    fill: "rgba(246, 246, 246, 1)",
-    strokeWidth: 1,
-    stroke: "rgba(232, 232, 232, 1)",
+    padding: 10,
 
+    borderRadius: 5,
+    marginBottom: 16,
     backgroundColor: "#F6F6F6",
     borderWidth: 1,
     borderColor: "#E8E8E8",
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
 
-    padding: 10,
+    // fontFamily: "Roboto-Regular",
+    fontSize: 16,
   },
   passwordContainer: {
     backgroundColor: "#F6F6F6",
     borderWidth: 1,
     borderColor: "#E8E8E8",
-    borderRadius: 3,
+    borderRadius: 5,
 
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+
     width: 343,
     height: 50,
     flexShrink: 0,
@@ -199,18 +195,22 @@ const styles = StyleSheet.create({
     height: 50,
     flexShrink: 0,
 
-    fontFamily: "Roboto-Regular",
+    // fontFamily: "Roboto-Regular",
+
     fontSize: 16,
     flex: 1,
     padding: 10,
   },
   showPasswordText: {
-    fontFamily: "Roboto-Regular",
+    // fontFamily: "Roboto-Regular",
     fontSize: 16,
     color: "#1B4371",
   },
   showPasswordButton: {
-    padding: 10,
+    padding: 15,
+  },
+  focusedInput: {
+    borderColor: "#FF6C00",
   },
   registerButton: {
     padding: 15,
@@ -228,14 +228,15 @@ const styles = StyleSheet.create({
   registerButtonText: {
     color: "white",
     textAlign: "center",
-    fontFamily: "Roboto-Regular",
+    // fontFamily: "Roboto-Regular",
     fontSize: 16,
     fontStyle: "normal",
   },
   loginLink: {
+    textAlign: "center",
     marginTop: 16,
     color: "#1B4371",
-    fontFamily: "Roboto-Regular",
+    // fontFamily: "Roboto-Regular",
     fontSize: 16,
     fontStyle: "normal",
   },

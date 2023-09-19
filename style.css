@@ -5,4 +5,5 @@ li {
     width: "375px",
     // height: "549px",
     // flexShrink: "0", */
+  text-decoration: line-through;
 }
